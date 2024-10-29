@@ -1,16 +1,27 @@
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config();
+
 async function main() {
   const Voting = await ethers.getContractFactory('Voting');
 
-  // Start deployment, returning a promise that resolves to a contract object
   const Voting_ = await Voting.deploy(['Mark', 'Mike', 'Henry', 'Rock'], 90);
   await Voting_.deployTransaction.wait(1);
 
   console.log('Contract address:', Voting_.address);
 
-  await Voting_.vote(0);
+  //! REMOVE THIS IN DEPLOIMENT FASE
+  const envPath = path.resolve('.env');
+  const envContents = fs.readFileSync(envPath, 'utf8');
+  const newContractAddress = `CONTRACT_ADDRESS=${Voting_.address}`;
 
-  const getVotes2 = await Voting_.getAllVotesOfCandiates();
-  console.log('Votes:', getVotes2[0].voteCount);
+  // Update CONTRACT_ADDRESS var in .env or add it if it doesn’t exist
+  const updatedEnvContents = envContents.includes('CONTRACT_ADDRESS=')
+    ? envContents.replace(/CONTRACT_ADDRESS=.*/, newContractAddress)
+    : `${envContents}\n${newContractAddress}`;
+
+  fs.writeFileSync(envPath, updatedEnvContents);
+  //!
 }
 
 main()
