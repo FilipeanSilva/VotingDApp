@@ -15,4 +15,12 @@ module.exports = {
       accounts: [process.env.pk_localhost],
     },
   },
+  namedAccounts: {
+    deployer: {
+      default: 0,
+    },
+    user: {
+      default: 1,
+    },
+  },
 };
