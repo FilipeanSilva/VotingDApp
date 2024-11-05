@@ -18,7 +18,6 @@
     "solidity-coverage": "^0.8.0",
     "typechain": "^8.3.0"
   },
-  
   "scripts": {
     "sampoia": "hardhat run --network sampoia scripts/00-Deploy.js",
     "local": "hardhat run --network localhost scripts/00-Deploy.js",
@@ -29,6 +28,7 @@
     "vote": "hardhat run --network localhost scripts/05-Vote.js",
     "votes": "hardhat run --network localhost scripts/06-GetAllVotes.js",
     "start": "hardhat run --network localhost scripts/07-StartVotingProcess.js",
-    "remove": "hardhat run --network localhost scripts/08-RemoveCandidate.js"
+    "remove": "hardhat run --network localhost scripts/08-RemoveCandidate.js",
+    "end": "hardhat run --network localhost scripts/09-EndVotingProcess.js"
   }
 }

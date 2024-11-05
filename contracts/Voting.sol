@@ -33,6 +33,8 @@ contract Voting {
     string public constant ERROR_VOTING_NOT_STARTED =
         "Voting process has not started yet.";
     string public constant ERROR_VOTING_ENDED = "Voting has already ended.";
+    string public constant ERROR_EMIT_END =
+        "Cannot end voting process while ongoing";
     string public constant ERROR_ALREADY_VOTED = "You have already voted.";
     string public constant ERROR_CANDIDATE_EXISTS =
         "Candidate with this name already exists.";
@@ -139,7 +141,7 @@ contract Voting {
     }
 
     function endVoting() public {
-        require(block.timestamp >= votingEnd, "Voting is still ongoing.");
+        require(block.timestamp >= votingEnd, ERROR_EMIT_END);
         emit VotingEnded(votingEnd);
 
         // Optionally, reset voting start to indicate voting has ended
