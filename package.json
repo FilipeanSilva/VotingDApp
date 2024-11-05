@@ -28,6 +28,7 @@
     "candidates": "hardhat run --network localhost scripts/04-GetAllCandidates.js",
     "vote": "hardhat run --network localhost scripts/05-Vote.js",
     "votes": "hardhat run --network localhost scripts/06-GetAllVotes.js",
-    "start": "hardhat run --network localhost scripts/07-StartVotingProcess.js"
+    "start": "hardhat run --network localhost scripts/07-StartVotingProcess.js",
+    "remove": "hardhat run --network localhost scripts/08-RemoveCandidate.js"
   }
 }
