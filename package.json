@@ -22,6 +22,10 @@
   "scripts": {
     "sampoia": "hardhat run --network sampoia scripts/00-Deploy.js",
     "local": "hardhat run --network localhost scripts/00-Deploy.js",
-    "vote": "hardhat run --network localhost scripts/01-Vote.js"
+    "vote": "hardhat run --network localhost scripts/01-Vote.js",
+    "time": "hardhat run --network localhost scripts/02-GetRemaningTime.js",
+    "status": "hardhat run --network localhost scripts/03-GetVotingStatus.js",
+    "candidates": "hardhat run --network localhost scripts/04-GetAllCandidates.js",
+    "allvotes": "hardhat run --network localhost scripts/05-GetAllVotes.js"
   }
 }

@@ -5,7 +5,7 @@ require('dotenv').config();
 async function main() {
   const Voting = await ethers.getContractFactory('Voting');
 
-  const Voting_ = await Voting.deploy(['Mark', 'Mike', 'Henry', 'Rock'], 90);
+  const Voting_ = await Voting.deploy(['Mark', 'Mike', 'Henry', 'Rock'], 10);
   await Voting_.deployTransaction.wait(1);
 
   console.log('Contract address:', Voting_.address);
