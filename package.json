@@ -18,8 +18,10 @@
     "solidity-coverage": "^0.8.0",
     "typechain": "^8.3.0"
   },
+  
   "scripts": {
     "sampoia": "hardhat run --network sampoia scripts/00-Deploy.js",
-    "local": "hardhat run --network localhost scripts/00-Deploy.js"
+    "local": "hardhat run --network localhost scripts/00-Deploy.js",
+    "vote": "hardhat run --network localhost scripts/01-Vote.js"
   }
 }
