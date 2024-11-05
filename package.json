@@ -19,18 +19,31 @@
   "scripts": {
     "reset": "git checkout -- . && git clean -fd",
     "clean": "rm -rf node_modules package-lock.json yarn.lock artifacts cache",
-    "sampoia": "hardhat run --network sampoia scripts/00-Deploy.js",
-    "local": "hardhat run --network localhost scripts/00-Deploy.js",
-    "add": "hardhat run --network localhost scripts/01-AddCandidates.js",
-    "time": "hardhat run --network localhost scripts/02-GetRemaningTime.js",
-    "status": "hardhat run --network localhost scripts/03-GetVotingStatus.js",
-    "candidates": "hardhat run --network localhost scripts/04-GetAllCandidates.js",
-    "vote": "hardhat run --network localhost scripts/05-Vote.js",
-    "votes": "hardhat run --network localhost scripts/06-GetAllVotes.js",
-    "start": "hardhat run --network localhost scripts/07-StartVotingProcess.js",
-    "remove": "hardhat run --network localhost scripts/08-RemoveCandidate.js",
-    "end": "hardhat run --network localhost scripts/09-EndVotingProcess.js",
-    "indices": "hardhat run --network localhost scripts/10-GetCandidatesWithIndices.js"
+
+    "localhost:deploy": "hardhat run --network localhost scripts/00-Deploy.js",
+    "sampoia:deploy": "hardhat run --network sampoia scripts/00-Deploy.js",
+
+    "localhost:add": "hardhat run --network localhost scripts/01-AddCandidates.js",
+    "localhost:time": "hardhat run --network localhost scripts/02-GetRemaningTime.js",
+    "localhost:status": "hardhat run --network localhost scripts/03-GetVotingStatus.js",
+    "localhost:candidates": "hardhat run --network localhost scripts/04-GetAllCandidates.js",
+    "localhost:vote": "hardhat run --network localhost scripts/05-Vote.js",
+    "localhost:votes": "hardhat run --network localhost scripts/06-GetAllVotes.js",
+    "localhost:start": "hardhat run --network localhost scripts/07-StartVotingProcess.js",
+    "localhost:remove": "hardhat run --network localhost scripts/08-RemoveCandidate.js",
+    "localhost:end": "hardhat run --network localhost scripts/09-EndVotingProcess.js",
+    "localhost:indices": "hardhat run --network localhost scripts/10-GetCandidatesWithIndices.js",
+
+    "sampoia:add": "hardhat run --network sampoia scripts/01-AddCandidates.js",
+    "sampoia:time": "hardhat run --network sampoia scripts/02-GetRemaningTime.js",
+    "sampoia:status": "hardhat run --network sampoia scripts/03-GetVotingStatus.js",
+    "sampoia:candidates": "hardhat run --network sampoia scripts/04-GetAllCandidates.js",
+    "sampoia:vote": "hardhat run --network sampoia scripts/05-Vote.js",
+    "sampoia:votes": "hardhat run --network sampoia scripts/06-GetAllVotes.js",
+    "sampoia:start": "hardhat run --network sampoia scripts/07-StartVotingProcess.js",
+    "sampoia:remove": "hardhat run --network sampoia scripts/08-RemoveCandidate.js",
+    "sampoia:end": "hardhat run --network sampoia scripts/09-EndVotingProcess.js",
+    "sampoia:indices": "hardhat run --network sampoia scripts/10-GetCandidatesWithIndices.js"
   },
   "license": "MIT"
 }
