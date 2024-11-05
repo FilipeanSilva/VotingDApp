@@ -8,7 +8,7 @@ contract Voting {
     }
 
     Candidate[] public candidates;
-    address immutable owner;
+    address public immutable owner;
     mapping(address => bool) public voters;
 
     uint256 public votingStart;
@@ -20,6 +20,10 @@ contract Voting {
         Ended
     }
 
+    event CandidateAdded(string name);
+    event VotingStarted(uint256 start, uint256 end);
+    event VoteCast(address voter, uint256 candidateIndex);
+
     constructor() {
         owner = msg.sender;
     }
@@ -30,7 +34,10 @@ contract Voting {
     }
 
     function addCandidates(string[] memory _names) public onlyOwner {
-        require(votingStart == 0, "Cannot add candidates after voting has started.");
+        require(
+            votingStart == 0,
+            "Cannot add candidates after voting has started."
+        );
 
         for (uint256 i = 0; i < _names.length; i++) {
             string memory newCandidateName = _names[i];
@@ -50,12 +57,19 @@ contract Voting {
             // If the candidate is not a duplicate, add it
             require(!isDuplicate, "Candidate with this name already exists.");
             candidates.push(Candidate({name: newCandidateName, voteCount: 0}));
+            emit CandidateAdded(newCandidateName);
         }
     }
 
     function excludeCandidate(uint256 _candidateIndex) public onlyOwner {
-        require(votingStart == 0, "Cannot exclude candidates after voting has started.");
-        require(_candidateIndex < candidates.length, "Invalid candidate index.");
+        require(
+            votingStart == 0,
+            "Cannot exclude candidates after voting has started."
+        );
+        require(
+            _candidateIndex < candidates.length,
+            "Invalid candidate index."
+        );
 
         // Move the last candidate to the position of the candidate to remove
         candidates[_candidateIndex] = candidates[candidates.length - 1];
@@ -68,16 +82,24 @@ contract Voting {
 
         votingStart = block.timestamp;
         votingEnd = block.timestamp + _durationInSeconds;
+        emit VotingStarted(votingStart, votingEnd);
     }
 
     function vote(uint256 _candidateIndex) public {
-        require(votingStart > 0 && block.timestamp >= votingStart, "Voting process has not started yet.");
+        require(
+            votingStart > 0 && block.timestamp >= votingStart,
+            "Voting process has not started yet."
+        );
         require(block.timestamp < votingEnd, "Voting has already ended.");
         require(!voters[msg.sender], "You have already voted.");
-        require(_candidateIndex < candidates.length, "Invalid candidate index.");
+        require(
+            _candidateIndex < candidates.length,
+            "Invalid candidate index."
+        );
 
         voters[msg.sender] = true;
         candidates[_candidateIndex].voteCount++;
+        emit VoteCast(msg.sender, _candidateIndex);
     }
 
     function getCandidate(
@@ -95,7 +117,9 @@ contract Voting {
     function getVotingStatus() public view returns (VotingStatus) {
         if (votingStart == 0) {
             return VotingStatus.NotStarted;
-        } else if (block.timestamp >= votingStart && block.timestamp < votingEnd) {
+        } else if (
+            block.timestamp >= votingStart && block.timestamp < votingEnd
+        ) {
             return VotingStatus.Ongoing;
         } else {
             return VotingStatus.Ended;
@@ -103,7 +127,7 @@ contract Voting {
     }
 
     function getRemainingTime() public view returns (uint256) {
-        if (votingStart == 0 || block.timestamp >= votingEnd) {
+        if (getVotingStatus() != VotingStatus.Ongoing) {
             return 0;
         }
         return votingEnd - block.timestamp;
