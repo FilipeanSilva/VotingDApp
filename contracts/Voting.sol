@@ -13,7 +13,6 @@ contract Voting {
 
     uint256 public votingStart;
     uint256 public votingEnd;
-    bool public votingStarted = false;
 
     enum VotingStatus {
         NotStarted,
@@ -31,10 +30,7 @@ contract Voting {
     }
 
     function addCandidates(string[] memory _names) public onlyOwner {
-        require(
-            !votingStarted,
-            "Cannot add candidates after voting has started."
-        );
+        require(votingStart == 0, "Cannot add candidates after voting has started.");
 
         for (uint256 i = 0; i < _names.length; i++) {
             string memory newCandidateName = _names[i];
@@ -58,14 +54,8 @@ contract Voting {
     }
 
     function excludeCandidate(uint256 _candidateIndex) public onlyOwner {
-        require(
-            !votingStarted,
-            "Cannot exclude candidates after voting has started."
-        );
-        require(
-            _candidateIndex < candidates.length,
-            "Invalid candidate index."
-        );
+        require(votingStart == 0, "Cannot exclude candidates after voting has started.");
+        require(_candidateIndex < candidates.length, "Invalid candidate index.");
 
         // Move the last candidate to the position of the candidate to remove
         candidates[_candidateIndex] = candidates[candidates.length - 1];
@@ -73,25 +63,18 @@ contract Voting {
     }
 
     function startVotingProcess(uint256 _durationInSeconds) public onlyOwner {
-        require(!votingStarted, "Voting process has already started.");
+        require(votingStart == 0, "Voting process has already started.");
         require(candidates.length > 0, "Must have at least one candidate.");
 
         votingStart = block.timestamp;
         votingEnd = block.timestamp + _durationInSeconds;
-        votingStarted = true;
     }
 
     function vote(uint256 _candidateIndex) public {
-        require(votingStarted, "Voting process has not started yet.");
-        require(
-            block.timestamp >= votingStart && block.timestamp < votingEnd,
-            "Voting is not active."
-        );
+        require(votingStart > 0 && block.timestamp >= votingStart, "Voting process has not started yet.");
+        require(block.timestamp < votingEnd, "Voting has already ended.");
         require(!voters[msg.sender], "You have already voted.");
-        require(
-            _candidateIndex < candidates.length,
-            "Invalid candidate index."
-        );
+        require(_candidateIndex < candidates.length, "Invalid candidate index.");
 
         voters[msg.sender] = true;
         candidates[_candidateIndex].voteCount++;
@@ -110,20 +93,17 @@ contract Voting {
     }
 
     function getVotingStatus() public view returns (VotingStatus) {
-        if (!votingStarted) {
+        if (votingStart == 0) {
             return VotingStatus.NotStarted;
-        } else if (
-            block.timestamp >= votingStart && block.timestamp < votingEnd
-        ) {
+        } else if (block.timestamp >= votingStart && block.timestamp < votingEnd) {
             return VotingStatus.Ongoing;
         } else {
             return VotingStatus.Ended;
         }
     }
 
-    //If instead of require because it will be an off-chain call
     function getRemainingTime() public view returns (uint256) {
-        if (!votingStarted || block.timestamp >= votingEnd) {
+        if (votingStart == 0 || block.timestamp >= votingEnd) {
             return 0;
         }
         return votingEnd - block.timestamp;
