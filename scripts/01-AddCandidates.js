@@ -3,6 +3,7 @@ async function main() {
 
   // Define an array of candidate names to add
   const candidateNames = ["Alice", "Bob", "Charlie", "Dave"];
+  // const candidateNames = ["Rob"];
 
   // Get contract instance
   const Voting = await ethers.getContractFactory('Voting');

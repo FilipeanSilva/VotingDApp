@@ -15,6 +15,12 @@ contract Voting {
     uint256 public votingEnd;
     bool public votingStarted = false;
 
+    enum VotingStatus {
+        NotStarted,
+        Ongoing,
+        Ended
+    }
+
     constructor() {
         owner = msg.sender;
     }
@@ -29,8 +35,25 @@ contract Voting {
             !votingStarted,
             "Cannot add candidates after voting has started."
         );
+
         for (uint256 i = 0; i < _names.length; i++) {
-            candidates.push(Candidate({name: _names[i], voteCount: 0}));
+            string memory newCandidateName = _names[i];
+
+            // Check if the candidate name already exists in the candidates array
+            bool isDuplicate = false;
+            for (uint256 j = 0; j < candidates.length; j++) {
+                if (
+                    keccak256(abi.encodePacked(candidates[j].name)) ==
+                    keccak256(abi.encodePacked(newCandidateName))
+                ) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+            // If the candidate is not a duplicate, add it
+            require(!isDuplicate, "Candidate with this name already exists.");
+            candidates.push(Candidate({name: newCandidateName, voteCount: 0}));
         }
     }
 
@@ -52,6 +75,7 @@ contract Voting {
     function startVotingProcess(uint256 _durationInSeconds) public onlyOwner {
         require(!votingStarted, "Voting process has already started.");
         require(candidates.length > 0, "Must have at least one candidate.");
+
         votingStart = block.timestamp;
         votingEnd = block.timestamp + _durationInSeconds;
         votingStarted = true;
@@ -85,16 +109,21 @@ contract Voting {
         return candidates;
     }
 
-    function getVotingStatus() public view returns (bool) {
-        return
-            votingStarted &&
-            block.timestamp >= votingStart &&
-            block.timestamp < votingEnd;
+    function getVotingStatus() public view returns (VotingStatus) {
+        if (!votingStarted) {
+            return VotingStatus.NotStarted;
+        } else if (
+            block.timestamp >= votingStart && block.timestamp < votingEnd
+        ) {
+            return VotingStatus.Ongoing;
+        } else {
+            return VotingStatus.Ended;
+        }
     }
 
+    //If instead of require because it will be an off-chain call
     function getRemainingTime() public view returns (uint256) {
-        require(votingStarted, "Voting has not started yet.");
-        if (block.timestamp >= votingEnd) {
+        if (!votingStarted || block.timestamp >= votingEnd) {
             return 0;
         }
         return votingEnd - block.timestamp;

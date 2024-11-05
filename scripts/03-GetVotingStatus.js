@@ -1,4 +1,3 @@
-// scripts/01-Vote.js
 async function main() {
   const contractAddress = process.env.CONTRACT_ADDRESS;
   const candidateIndex = 0;
@@ -8,9 +7,26 @@ async function main() {
 
   console.log('Contract address:', Voting_.address);
 
-  // Retrieve and display time left
+  // Retrieve and display voting status
   const votingStatus = await Voting_.getVotingStatus();
-  console.log('Voting Status: ', votingStatus === true ? 'On going' : 'Ended');
+
+  // Interpret the status
+  let statusMessage;
+  switch (votingStatus) {
+    case 0:
+      statusMessage = 'Not started';
+      break;
+    case 1:
+      statusMessage = 'Ongoing';
+      break;
+    case 2:
+      statusMessage = 'Ended';
+      break;
+    default:
+      statusMessage = 'Unknown status';
+  }
+
+  console.log('Voting Status:', statusMessage);
 }
 
 main()
