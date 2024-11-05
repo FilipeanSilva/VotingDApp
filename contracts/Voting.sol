@@ -99,7 +99,12 @@ contract Voting {
             votingStart > 0 && block.timestamp >= votingStart,
             ERROR_VOTING_NOT_STARTED
         );
-        require(block.timestamp < votingEnd, ERROR_VOTING_ENDED);
+
+        if (block.timestamp >= votingEnd) {
+            emit VotingEnded(votingEnd);
+            revert(ERROR_VOTING_ENDED);
+        }
+
         require(!voters[msg.sender], ERROR_ALREADY_VOTED);
         require(_candidateIndex < candidates.length, ERROR_INVALID_CANDIDATE);
 
@@ -131,5 +136,13 @@ contract Voting {
             return 0;
         }
         return votingEnd - block.timestamp;
+    }
+
+    function endVoting() public {
+        require(block.timestamp >= votingEnd, "Voting is still ongoing.");
+        emit VotingEnded(votingEnd);
+
+        // Optionally, reset voting start to indicate voting has ended
+        votingStart = 0;
     }
 }
