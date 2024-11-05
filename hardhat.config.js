@@ -5,7 +5,11 @@ module.exports = {
   solidity: '0.8.11',
   defaultNetwork: 'localhost',
   networks: {
-    hardhat: {},
+    hardhat: {
+      accounts: {
+        count: 10, // Ensure at least 10 accounts are available for testing
+      },
+    },
     sampoia: {
       url: process.env.ARBITRUM_SAMPOIA_RPC_URL,
       accounts: [process.env.PRIVATE_KEY],
