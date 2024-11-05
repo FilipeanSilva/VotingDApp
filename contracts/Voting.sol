@@ -8,57 +8,95 @@ contract Voting {
     }
 
     Candidate[] public candidates;
-    address owner;
+    address immutable owner;
     mapping(address => bool) public voters;
 
     uint256 public votingStart;
     uint256 public votingEnd;
+    bool public votingStarted = false;
 
-constructor(string[] memory _candidateNames, uint256 _durationInMinutes) {
-    for (uint256 i = 0; i < _candidateNames.length; i++) {
-        candidates.push(Candidate({
-            name: _candidateNames[i],
-            voteCount: 0
-        }));
+    constructor() {
+        owner = msg.sender;
     }
-    owner = msg.sender;
-    votingStart = block.timestamp;
-    votingEnd = block.timestamp + (_durationInMinutes * 1 minutes);
-}
 
-    modifier onlyOwner {
-        require(msg.sender == owner);
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can perform this action.");
         _;
     }
 
-    function addCandidate(string memory _name) public onlyOwner {
-        candidates.push(Candidate({
-                name: _name,
-                voteCount: 0
-        }));
+    function addCandidates(string[] memory _names) public onlyOwner {
+        require(
+            !votingStarted,
+            "Cannot add candidates after voting has started."
+        );
+        for (uint256 i = 0; i < _names.length; i++) {
+            candidates.push(Candidate({name: _names[i], voteCount: 0}));
+        }
+    }
+
+    function excludeCandidate(uint256 _candidateIndex) public onlyOwner {
+        require(
+            !votingStarted,
+            "Cannot exclude candidates after voting has started."
+        );
+        require(
+            _candidateIndex < candidates.length,
+            "Invalid candidate index."
+        );
+
+        // Move the last candidate to the position of the candidate to remove
+        candidates[_candidateIndex] = candidates[candidates.length - 1];
+        candidates.pop();
+    }
+
+    function startVotingProcess(uint256 _durationInSeconds) public onlyOwner {
+        require(!votingStarted, "Voting process has already started.");
+        require(candidates.length > 0, "Must have at least one candidate.");
+        votingStart = block.timestamp;
+        votingEnd = block.timestamp + _durationInSeconds;
+        votingStarted = true;
     }
 
     function vote(uint256 _candidateIndex) public {
+        require(votingStarted, "Voting process has not started yet.");
+        require(
+            block.timestamp >= votingStart && block.timestamp < votingEnd,
+            "Voting is not active."
+        );
         require(!voters[msg.sender], "You have already voted.");
-        require(_candidateIndex < candidates.length, "Invalid candidate index.");
+        require(
+            _candidateIndex < candidates.length,
+            "Invalid candidate index."
+        );
 
-        candidates[_candidateIndex].voteCount++;
         voters[msg.sender] = true;
+        candidates[_candidateIndex].voteCount++;
     }
 
-    function getAllVotesOfCandiates() public view returns (Candidate[] memory){
+    function getCandidate(
+        uint256 index
+    ) public view returns (string memory, uint256) {
+        require(index < candidates.length, "Invalid candidate index.");
+        Candidate memory candidate = candidates[index];
+        return (candidate.name, candidate.voteCount);
+    }
+
+    function getAllVotesOfCandiates() public view returns (Candidate[] memory) {
         return candidates;
     }
 
     function getVotingStatus() public view returns (bool) {
-        return (block.timestamp >= votingStart && block.timestamp < votingEnd);
+        return
+            votingStarted &&
+            block.timestamp >= votingStart &&
+            block.timestamp < votingEnd;
     }
 
     function getRemainingTime() public view returns (uint256) {
-        require(block.timestamp >= votingStart, "Voting has not started yet.");
+        require(votingStarted, "Voting has not started yet.");
         if (block.timestamp >= votingEnd) {
             return 0;
-    }
+        }
         return votingEnd - block.timestamp;
     }
 }
