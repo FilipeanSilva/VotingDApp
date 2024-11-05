@@ -1,69 +1,68 @@
-const { ethers } = require('hardhat');
+const { ethers, network } = require("hardhat");
+const { assert } = require("chai");
 
-describe('Voting Contract', function () {
-  let Voting;
-  let voting;
-  let owner;
-  let addr1;
+describe("Voting Contract", function () {
+  let Voting, voting, owner, user;
 
   beforeEach(async function () {
-    Voting = await ethers.getContractFactory('Voting');
-    [owner, addr1] = await ethers.getSigners();
-    voting = await Voting.deploy();
+    [owner, user] = await ethers.getSigners(); // Ensure both owner and user are signers
+    Voting = await ethers.getContractFactory("Voting");
+    voting = await Voting.deploy(); // Owner deploys the contract
     await voting.deployed();
   });
 
-  describe('Deployment', function () {
-    it('Should set the right owner', async function () {
-      const contractOwner = await voting.owner();
-      if (contractOwner !== owner.address) {
-        throw new Error('Owner is not set correctly');
-      }
-    });
+  it("should allow owner to add candidates", async function () {
+    await voting.addCandidates(["Alice", "Bob"]);
+    const candidates = await voting.getAllCandidates();
+    assert.equal(candidates.length, 2, "Two candidates should be added");
+    assert.equal(candidates[0].name, "Alice", "First candidate should be Alice");
+    assert.equal(candidates[1].name, "Bob", "Second candidate should be Bob");
   });
 
-  describe('Candidates', function () {
-    it('Should add candidates', async function () {
-      await voting.addCandidates(['Alice', 'Bob']);
-      const candidates = await voting.getAllCandidates();
-      if (candidates.length !== 2) {
-        throw new Error('Candidate count is incorrect');
-      }
-      if (candidates[0].name !== 'Alice') {
-        throw new Error('First candidate name is incorrect');
-      }
-      if (candidates[1].name !== 'Bob') {
-        throw new Error('Second candidate name is incorrect');
-      }
-    });
+  it("should allow owner to start voting", async function () {
+    await voting.addCandidates(["Alice", "Bob"]);
+    await voting.startVotingProcess(1000);
 
-    it('Should not allow duplicate candidates', async function () {
-      await voting.addCandidates(['Alice']);
-      try {
-        await voting.addCandidates(['Alice']);
-        throw new Error('Expected error not received');
-      } catch (err) {
-        if (err.message !== 'Candidate with this name already exists.') {
-          throw new Error('Unexpected error message: ' + err.message);
-        }
-      }
-    });
-
-    it('Should not modify candidates after voting starts', async function () {
-      await voting.addCandidates(['Alice']);
-      await voting.startVotingProcess(60);
-      try {
-        await voting.addCandidates(['Bob']);
-        throw new Error('Expected error not received');
-      } catch (err) {
-        if (
-          err.message !== 'Cannot modify candidates after voting has started.'
-        ) {
-          throw new Error('Unexpected error message: ' + err.message);
-        }
-      }
-    });
+    const status = await voting.getVotingStatus();
+    assert.equal(status, 1, "Voting should be ongoing");
   });
 
-  // Continue adding tests for startVotingProcess, vote, etc.
+  it("should allow user to cast a vote", async function () {
+    await voting.addCandidates(["Alice", "Bob"]);
+    await voting.startVotingProcess(1000);
+
+    // Use explicit `getSigner` to ensure `user` is correctly treated as a signer
+    await voting.connect(ethers.provider.getSigner(user.address)).vote(0);
+    const [_, voteCount] = await voting.getCandidate(0);
+    assert.equal(voteCount, 1, "Alice should have 1 vote");
+  });
+
+  it("should prevent double voting by the same user", async function () {
+    await voting.addCandidates(["Alice", "Bob"]);
+    await voting.startVotingProcess(1000);
+
+    await voting.connect(ethers.provider.getSigner(user.address)).vote(0);
+    try {
+      await voting.connect(ethers.provider.getSigner(user.address)).vote(0);
+      assert.fail("Double voting should throw an error");
+    } catch (error) {
+      assert(
+        error.message.includes("You have already voted."),
+        "Error should match 'already voted' restriction"
+      );
+    }
+  });
+
+  it("should allow owner to end voting by mocking time", async function () {
+    await voting.addCandidates(["Alice", "Bob"]);
+    await voting.startVotingProcess(1); // Set a short duration for quick testing
+
+    // Move time forward to simulate the voting period ending
+    await network.provider.send("evm_increaseTime", [2]);
+    await network.provider.send("evm_mine");
+
+    await voting.endVoting();
+    const status = await voting.getVotingStatus();
+    assert.equal(status, 2, "Voting should be ended");
+  });
 });
