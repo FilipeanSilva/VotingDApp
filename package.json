@@ -19,6 +19,8 @@
     "typechain": "^8.3.0"
   },
   "scripts": {
+    "reset": "git checkout -- . && git clean -fd",
+    "clean": "rm -rf node_modules package-lock.json yarn.lock artifacts cache",
     "sampoia": "hardhat run --network sampoia scripts/00-Deploy.js",
     "local": "hardhat run --network localhost scripts/00-Deploy.js",
     "add": "hardhat run --network localhost scripts/01-AddCandidates.js",
@@ -30,5 +32,6 @@
     "start": "hardhat run --network localhost scripts/07-StartVotingProcess.js",
     "remove": "hardhat run --network localhost scripts/08-RemoveCandidate.js",
     "end": "hardhat run --network localhost scripts/09-EndVotingProcess.js"
-  }
+  },
+  "license": "MIT"
 }
