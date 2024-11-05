@@ -11,7 +11,7 @@ async function main() {
   console.log('Contract address:', Voting_.address);
 
   // Retrieve and display all votes of candidates
-  const allVotes = await Voting_.getAllVotesOfCandiates();
+  const allVotes = await Voting_.getAllCandidates();
 
   let totalCandidates = 0;
   // Display votes for each candidate

@@ -23,21 +23,36 @@ contract Voting {
     event CandidateAdded(string name);
     event VotingStarted(uint256 start, uint256 end);
     event VoteCast(address voter, uint256 candidateIndex);
+    event VotingEnded(uint256 endTime);
+
+    // Define constant error messages
+    string public constant ERROR_ONLY_OWNER =
+        "Only the owner can perform this action.";
+    string public constant ERROR_VOTING_ALREADY_STARTED =
+        "Voting process has already started.";
+    string public constant ERROR_VOTING_NOT_STARTED =
+        "Voting process has not started yet.";
+    string public constant ERROR_VOTING_ENDED = "Voting has already ended.";
+    string public constant ERROR_ALREADY_VOTED = "You have already voted.";
+    string public constant ERROR_CANDIDATE_EXISTS =
+        "Candidate with this name already exists.";
+    string public constant ERROR_INVALID_CANDIDATE = "Invalid candidate index.";
+    string public constant ERROR_NO_CANDIDATES =
+        "Must have at least one candidate.";
+    string public constant ERROR_CANNOT_MODIFY_CANDIDATES =
+        "Cannot modify candidates after voting has started.";
 
     constructor() {
         owner = msg.sender;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can perform this action.");
+        require(msg.sender == owner, ERROR_ONLY_OWNER);
         _;
     }
 
     function addCandidates(string[] memory _names) public onlyOwner {
-        require(
-            votingStart == 0,
-            "Cannot add candidates after voting has started."
-        );
+        require(votingStart == 0, ERROR_CANNOT_MODIFY_CANDIDATES);
 
         for (uint256 i = 0; i < _names.length; i++) {
             string memory newCandidateName = _names[i];
@@ -55,21 +70,15 @@ contract Voting {
             }
 
             // If the candidate is not a duplicate, add it
-            require(!isDuplicate, "Candidate with this name already exists.");
+            require(!isDuplicate, ERROR_CANDIDATE_EXISTS);
             candidates.push(Candidate({name: newCandidateName, voteCount: 0}));
             emit CandidateAdded(newCandidateName);
         }
     }
 
     function excludeCandidate(uint256 _candidateIndex) public onlyOwner {
-        require(
-            votingStart == 0,
-            "Cannot exclude candidates after voting has started."
-        );
-        require(
-            _candidateIndex < candidates.length,
-            "Invalid candidate index."
-        );
+        require(votingStart == 0, ERROR_CANNOT_MODIFY_CANDIDATES);
+        require(_candidateIndex < candidates.length, ERROR_INVALID_CANDIDATE);
 
         // Move the last candidate to the position of the candidate to remove
         candidates[_candidateIndex] = candidates[candidates.length - 1];
@@ -77,8 +86,8 @@ contract Voting {
     }
 
     function startVotingProcess(uint256 _durationInSeconds) public onlyOwner {
-        require(votingStart == 0, "Voting process has already started.");
-        require(candidates.length > 0, "Must have at least one candidate.");
+        require(votingStart == 0, ERROR_VOTING_ALREADY_STARTED);
+        require(candidates.length > 0, ERROR_NO_CANDIDATES);
 
         votingStart = block.timestamp;
         votingEnd = block.timestamp + _durationInSeconds;
@@ -88,14 +97,11 @@ contract Voting {
     function vote(uint256 _candidateIndex) public {
         require(
             votingStart > 0 && block.timestamp >= votingStart,
-            "Voting process has not started yet."
+            ERROR_VOTING_NOT_STARTED
         );
-        require(block.timestamp < votingEnd, "Voting has already ended.");
-        require(!voters[msg.sender], "You have already voted.");
-        require(
-            _candidateIndex < candidates.length,
-            "Invalid candidate index."
-        );
+        require(block.timestamp < votingEnd, ERROR_VOTING_ENDED);
+        require(!voters[msg.sender], ERROR_ALREADY_VOTED);
+        require(_candidateIndex < candidates.length, ERROR_INVALID_CANDIDATE);
 
         voters[msg.sender] = true;
         candidates[_candidateIndex].voteCount++;
@@ -105,25 +111,19 @@ contract Voting {
     function getCandidate(
         uint256 index
     ) public view returns (string memory, uint256) {
-        require(index < candidates.length, "Invalid candidate index.");
+        require(index < candidates.length, ERROR_INVALID_CANDIDATE);
         Candidate memory candidate = candidates[index];
         return (candidate.name, candidate.voteCount);
     }
 
-    function getAllVotesOfCandiates() public view returns (Candidate[] memory) {
+    function getAllCandidates() public view returns (Candidate[] memory) {
         return candidates;
     }
 
     function getVotingStatus() public view returns (VotingStatus) {
-        if (votingStart == 0) {
-            return VotingStatus.NotStarted;
-        } else if (
-            block.timestamp >= votingStart && block.timestamp < votingEnd
-        ) {
-            return VotingStatus.Ongoing;
-        } else {
-            return VotingStatus.Ended;
-        }
+        if (votingStart == 0) return VotingStatus.NotStarted;
+        if (block.timestamp >= votingEnd) return VotingStatus.Ended;
+        return VotingStatus.Ongoing;
     }
 
     function getRemainingTime() public view returns (uint256) {
