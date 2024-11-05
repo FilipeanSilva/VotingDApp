@@ -31,7 +31,8 @@
     "votes": "hardhat run --network localhost scripts/06-GetAllVotes.js",
     "start": "hardhat run --network localhost scripts/07-StartVotingProcess.js",
     "remove": "hardhat run --network localhost scripts/08-RemoveCandidate.js",
-    "end": "hardhat run --network localhost scripts/09-EndVotingProcess.js"
+    "end": "hardhat run --network localhost scripts/09-EndVotingProcess.js",
+    "indices": "hardhat run --network localhost scripts/10-GetCandidatesWithIndices.js"
   },
   "license": "MIT"
 }

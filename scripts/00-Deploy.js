@@ -1,32 +1,52 @@
 const fs = require('fs');
 const path = require('path');
+const hre = require('hardhat');
 require('dotenv').config();
 
 async function main() {
-  const Voting = await ethers.getContractFactory('Voting');
+  // Compile the contracts
+  console.log('Compiling contracts...');
+  await hre.run('compile');
 
-  const Voting_ = await Voting.deploy();
-  await Voting_.deployTransaction.wait(1);
+  // Deploy the Voting contract
+  console.log('Deploying Voting contract...');
+  const Voting = await hre.ethers.getContractFactory('Voting');
+  const votingContract = await Voting.deploy();
+  await votingContract.deployed();
 
-  console.log('Contract address:', Voting_.address);
+  console.log('Voting contract deployed to:', votingContract.address);
 
-  //! REMOVE THIS IN DEPLOIMENT FASE
+  // Update the .env file with the new contract address
+  updateEnvFile('CONTRACT_ADDRESS', votingContract.address);
+}
+
+// Function to update or add a key-value pair in the .env file
+function updateEnvFile(key, value) {
   const envPath = path.resolve('.env');
-  const envContents = fs.readFileSync(envPath, 'utf8');
-  const newContractAddress = `CONTRACT_ADDRESS=${Voting_.address}`;
 
-  // Update CONTRACT_ADDRESS var in .env or add it if it doesn’t exist
-  const updatedEnvContents = envContents.includes('CONTRACT_ADDRESS=')
-    ? envContents.replace(/CONTRACT_ADDRESS=.*/, newContractAddress)
-    : `${envContents}\n${newContractAddress}`;
+  try {
+    // Read existing .env contents or create a new string if file does not exist
+    const envContents = fs.existsSync(envPath)
+      ? fs.readFileSync(envPath, 'utf8')
+      : '';
+    const newLine = `${key}=${value}`;
 
-  fs.writeFileSync(envPath, updatedEnvContents);
-  //!
+    // Update or append the key-value pair
+    const updatedEnvContents = envContents.includes(`${key}=`)
+      ? envContents.replace(new RegExp(`${key}=.*`), newLine)
+      : `${envContents}\n${newLine}`;
+
+    // Write changes to .env file
+    fs.writeFileSync(envPath, updatedEnvContents.trim()); // Trim to avoid leading newlines
+    console.log(`Updated ${key} in .env file.`);
+  } catch (error) {
+    console.error(`Failed to update .env file:`, error);
+  }
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
+    console.error('Deployment failed:', error);
     process.exit(1);
   });

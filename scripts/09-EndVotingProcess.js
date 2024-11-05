@@ -1,42 +1,56 @@
 require('dotenv').config();
-const { ethers } = require('hardhat');
+const hre = require('hardhat');
 
 async function main() {
-  // Load the contract address from environment variables
   const contractAddress = process.env.CONTRACT_ADDRESS;
+  if (!contractAddress) {
+    console.error('Error: CONTRACT_ADDRESS is not set in the .env file.');
+    process.exit(1);
+  }
 
-  // Get the contract instance
-  const Voting = await ethers.getContractFactory('Voting');
+  const Voting = await hre.ethers.getContractFactory('Voting');
   const votingContract = Voting.attach(contractAddress);
 
   console.log('Contract address:', votingContract.address);
 
-/*   // Get the current block timestamp to check if voting has ended
-  const votingEnd = await votingContract.votingEnd();
-  const currentTime = Math.floor(Date.now() / 1000);
-
-  if (currentTime < votingEnd) {
-    console.log(
-      'Voting is still ongoing. Please wait until the voting period has ended.'
-    );
-    return;
-  } */
-
-  // Call the endVoting function
+  // Check if the voting period has ended
   try {
-    const tx = await votingContract.endVoting();
-    await tx.wait(); // Wait for the transaction to be mined
+    const votingEnded = await checkIfVotingEnded(votingContract);
+    if (!votingEnded) {
+      console.log(
+        'Voting is still ongoing. Please wait until the voting period has ended.'
+      );
+      return;
+    }
+
+    // Call endVoting if the voting period has ended
+    await endVoting(votingContract);
     console.log(
       'Voting has ended successfully, and the VotingEnded event has been emitted.'
     );
   } catch (error) {
-    console.error('Failed to end voting:', error);
+    console.error('Error during voting end process:', error);
   }
+}
+
+// Function to check if voting has ended
+async function checkIfVotingEnded(contract) {
+  const votingEnd = await contract.votingEnd();
+  const currentTime = Math.floor(Date.now() / 1000);
+  return currentTime >= votingEnd;
+}
+
+// Function to call endVoting on the contract
+async function endVoting(contract) {
+  console.log('Sending transaction to end the voting process...');
+  const tx = await contract.endVoting();
+  await tx.wait(); // Wait for the transaction to be mined
+  console.log('Transaction mined: Voting process has ended.');
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
+    console.error('Script failed with error:', error);
     process.exit(1);
   });

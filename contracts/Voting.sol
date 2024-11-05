@@ -127,6 +127,21 @@ contract Voting {
         return candidates;
     }
 
+    function getCandidatesWithIndices()
+        public
+        view
+        returns (string[] memory names, uint256[] memory indices)
+    {
+        uint256 candidateCount = candidates.length;
+        names = new string[](candidateCount);
+        indices = new uint256[](candidateCount);
+
+        for (uint256 i = 0; i < candidateCount; i++) {
+            names[i] = candidates[i].name;
+            indices[i] = i;
+        }
+    }
+
     function getVotingStatus() public view returns (VotingStatus) {
         if (votingStart == 0) return VotingStatus.NotStarted;
         if (block.timestamp >= votingEnd) return VotingStatus.Ended;
@@ -142,9 +157,11 @@ contract Voting {
 
     function endVoting() public {
         require(block.timestamp >= votingEnd, ERROR_EMIT_END);
+        require(votingStart != 0, ERROR_VOTING_ENDED);
+
         emit VotingEnded(votingEnd);
 
-        // Optionally, reset voting start to indicate voting has ended
+        // Reset votingStart to indicate voting has ended, preventing further calls
         votingStart = 0;
     }
 }
