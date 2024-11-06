@@ -19,6 +19,7 @@
   "scripts": {
     "reset": "git checkout -- . && git clean -fd",
     "clean": "rm -rf node_modules package-lock.json yarn.lock artifacts cache",
+    "local": "node scripts/00-Local_Deploy_Only_Hardhat.js",
     "local:deploy": "hardhat run --network localhost scripts/00-Deploy.js",
     "local:add": "hardhat run --network localhost scripts/01-AddCandidates.js",
     "local:time": "hardhat run --network localhost scripts/02-GetRemaningTime.js",

@@ -7,6 +7,19 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Debug Hardhat deploy",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/scripts/00-Local_Deploy_Only_Hardhat.js",
+            "args": ["test", "--no-compile"],
+            "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "node",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Debug Hardhat Tests",
             "skipFiles": ["<node_internals>/**"],
             "program": "${workspaceFolder}/node_modules/.bin/hardhat",
