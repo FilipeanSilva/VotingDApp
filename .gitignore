@@ -1,7 +1,8 @@
 node_modules
-.env
 yarn-error.log
+yarn.log
 .vscode
+.env
 
 # Hardhat files
 /cache
