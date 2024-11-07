@@ -1,8 +1,9 @@
 node_modules
 yarn-error.log
-yarn.log
+yarn.lock
 .vscode
 .env
+/.old
 
 # Hardhat files
 /cache
@@ -18,6 +19,3 @@ yarn.log
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
-
-#old
-/.old
