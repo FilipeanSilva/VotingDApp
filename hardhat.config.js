@@ -1,4 +1,3 @@
-const fs = require('fs');
 require('dotenv').config();
 require('@nomiclabs/hardhat-ethers');
 
@@ -6,11 +5,13 @@ module.exports = {
   solidity: '0.8.11',
   defaultNetwork: 'localhost',
   networks: {
+
     hardhat: {
       accounts: {
         count: 10,
       },
     },
+
     localhost: {
       url: process.env.localhost_url || 'http://127.0.0.1:8545',
       accounts: [process.env.pk_localhost].filter(Boolean),

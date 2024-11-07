@@ -11,13 +11,24 @@ async function main() {
   // Deploy the Voting contract
   console.log('Deploying Voting contract...');
   const Voting = await hre.ethers.getContractFactory('Voting');
-  const votingContract = await Voting.deploy();
-  await votingContract.deployed();
+  try {
+    const votingContract = await Voting.deploy();
+    await votingContract.deployed();
 
-  console.log('Voting contract deployed to:', votingContract.address);
+    console.log('Voting contract deployed to:', votingContract.address);
 
-  // Update the .env file with the new contract address
-  updateEnvFile('CONTRACT_ADDRESS', votingContract.address);
+    // Update the .env file with the new contract address
+    updateEnvFile('CONTRACT_ADDRESS', votingContract.address);
+  } catch (e) {
+    if (e.code == 'NETWORK_ERROR') {
+      console.error(
+        '-- Failed to deploy Voting contract due to network error. Verify .env file or network setup. --\n\n' +
+          e.message
+      );
+    }
+    console.error('Failed to deploy Voting contract:', e);
+    process.exit(1);
+  }
 }
 
 // Function to update or add a key-value pair in the .env file

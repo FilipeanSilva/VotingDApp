@@ -1,9 +1,10 @@
 const { ethers, network } = require('hardhat');
 const { assert } = require('chai');
 
+//! The tests can only pass when .env file has working keys and the network is running 
 describe('Voting Contract', function () {
   let Voting, voting, owner, user;
-
+  
   beforeEach(async function () {
     const signers = await ethers.getSigners();
 
