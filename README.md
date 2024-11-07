@@ -150,7 +150,7 @@ Each script performs a specific function related to the voting process:
 
 ## Testing
 
-The tests can only pass when .env file has working keys and the network is running 
+Make sure you are using HARDHAT network (it's the default network) 
 To test the Voting contract, you can create a test file in the `test` folder:
 1. **Run Tests**:
    ```bash
