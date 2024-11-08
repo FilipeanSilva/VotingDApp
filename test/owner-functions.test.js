@@ -1,5 +1,5 @@
 const { ethers, network } = require('hardhat');
-const { assert } = require('chai');
+const { assert, expect } = require('chai');
 
 describe('Voting Contract', function () {
   // Variables for the contract and users used in testing
@@ -120,119 +120,6 @@ describe('Voting Contract', function () {
           "Error should match 'Cannot end voting' restriction"
         );
       }
-    });
-  });
-
-  describe('User Voting', function () {
-    it('should allow a user to cast a vote', async function () {
-      // Setup: Add candidates and start voting
-      await voting.connect(owner).addCandidates(['Alice', 'Bob']);
-      await voting.connect(owner).startVotingProcess(1000);
-
-      // Act: User1 casts a vote for Alice (index 0)
-      await voting.connect(user1).vote(0);
-
-      // Assert: Check the vote count for Alice
-      const [_, voteCount] = await voting.getCandidate(0);
-      assert.equal(voteCount, 1, 'Alice should have 1 vote');
-    });
-
-    it('should prevent double voting by the same user', async function () {
-      // Setup: Add candidates and start voting
-      await voting.connect(owner).addCandidates(['Alice', 'Bob']);
-      await voting.connect(owner).startVotingProcess(1000);
-
-      // Act: User1 votes once, then tries to vote again
-      await voting.connect(user1).vote(0);
-      try {
-        await voting.connect(user1).vote(0);
-        assert.fail('Double voting should throw an error');
-      } catch (error) {
-        assert(
-          error.message.includes('You have already voted.'),
-          "Error should match 'already voted' restriction"
-        );
-      }
-    });
-
-    it('should prevent voting if the voting period has ended', async function () {
-      // Setup: Add candidates and start a short voting process
-      await voting.connect(owner).addCandidates(['Alice', 'Bob']);
-      await voting.connect(owner).startVotingProcess(1); // Short voting duration
-
-      // Simulate time passing to end voting
-      await network.provider.send('evm_increaseTime', [2]);
-      await network.provider.send('evm_mine');
-
-      // Act & Assert: Try voting after the voting period ended
-      try {
-        await voting.connect(user1).vote(0);
-        assert.fail('Voting after the voting period should throw an error');
-      } catch (error) {
-        assert(
-          error.message.includes('Voting has already ended.'),
-          `Expected error message to include 'Voting has already ended.', but got: ${error.message}`
-        );
-      }
-    });
-  });
-
-  describe('General Checks', function () {
-    it('should allow checking candidate details by index', async function () {
-      // Setup: Add a candidate
-      await voting.connect(owner).addCandidates(['Alice']);
-
-      // Act: Retrieve candidate details
-      const [name, voteCount] = await voting.getCandidate(0);
-
-      // Assert: Verify the candidate details
-      assert.equal(name, 'Alice', 'The candidate name should be Alice');
-      assert.equal(voteCount, 0, 'Initial vote count should be 0');
-    });
-
-    it('should prevent non-owner from adding candidates', async function () {
-      // Act & Assert: User1 tries to add a candidate
-      try {
-        await voting.connect(user1).addCandidates(['David']);
-        assert.fail('Non-owner adding candidates should throw an error');
-      } catch (error) {
-        assert(
-          error.message.includes('Only the owner can perform this action.'),
-          `Expected error message to include 'Only the owner can perform this action.', but got: ${error.message}`
-        );
-      }
-    });
-
-    it('should allow getting voting status', async function () {
-      // Assert: Check initial voting status
-      let status = await voting.getVotingStatus();
-      assert.equal(status, 0, 'Voting status should be NotStarted initially');
-
-      // Act: Start the voting process and verify the status
-      await voting.connect(owner).addCandidates(['Alice', 'Bob']);
-      await voting.connect(owner).startVotingProcess(1000);
-      status = await voting.getVotingStatus();
-      assert.equal(status, 1, 'Voting status should be Ongoing after starting');
-
-      // Simulate time passing to end voting and verify status
-      await network.provider.send('evm_increaseTime', [1001]);
-      await network.provider.send('evm_mine');
-      status = await voting.getVotingStatus();
-      assert.equal(
-        status,
-        2,
-        'Voting status should be Ended after time passes'
-      );
-    });
-
-    it('should handle an empty candidate list gracefully', async function () {
-      // Assert: Check behavior when no candidates are present
-      const candidates = await voting.getAllCandidates();
-      assert.equal(
-        candidates.length,
-        0,
-        'No candidates should be present initially'
-      );
     });
   });
 });
