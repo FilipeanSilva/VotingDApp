@@ -28,10 +28,32 @@ async function main() {
   } catch (e) {
     if (e.code == 'NETWORK_ERROR') {
       console.error(
-        `-- Failed to deploy Voting contract due to network error. Verify .env file or/and network setup.--\n
+        `\n-- Failed to deploy Voting contract due to network error. Verify '.env' file or/and network setup.--\n
         Network URL: ${hre.network.config?.url || 'Not available'}
-        Network Name: ${hre.network.config?.name || 'Not available'} \n
-        ${e.message}`
+        Network Name: ${hre.network.config?.name || 'Not available'}\n
+        ${e.message}\n`
+      );
+    } else if (
+      e.code == 'INSUFFICIENT_FUNDS' ||
+      e.data.message.includes("doesn't have enough funds")
+    ) {
+      const privateKey =
+        process.env.PRIVATE_KEY || process.env.pk_localhost || 'Not available';
+      const maskedKey =
+        privateKey !== 'Not available'
+          ? `${privateKey.slice(0, 4)}...${privateKey.slice(-4)}`
+          : 'Not available';
+
+      console.error(
+        `\n-- Failed to deploy Voting contract due to insufficient funds. Verify if the private key is correct and/or has sufficient funds --\n
+          Private Key Used: ${maskedKey}\n
+          ${e.message}\n\n`
+      );
+    } else if (e.message.includes("reading 'sendTransaction'")) {
+      const privateKey = process.env.PRIVATE_KEY || process.env.pk_localhost;
+
+      console.error(
+        `Error: The private key used might be incorrect or invalid\nPlease verify the private key set in the .env file.\nPrivate Key Used: '${privateKey}'`
       );
     }
     console.error('Failed to deploy Voting contract:', e);

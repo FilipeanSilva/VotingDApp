@@ -1,5 +1,5 @@
-const { ethers, network } = require('hardhat');
-const { assert, expect } = require('chai');
+const { ethers } = require('hardhat');
+const { assert } = require('chai');
 
 describe('Voting Contract', function () {
   // Variables for the contract and users used in testing
