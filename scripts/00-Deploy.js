@@ -35,7 +35,7 @@ async function main() {
       );
     } else if (
       e.code == 'INSUFFICIENT_FUNDS' ||
-      e.data.message.includes("doesn't have enough funds")
+      e.data?.message?.includes("doesn't have enough funds")
     ) {
       const privateKey =
         process.env.PRIVATE_KEY || process.env.pk_localhost || 'Not available';
@@ -49,7 +49,7 @@ async function main() {
           Private Key Used: ${maskedKey}\n
           ${e.message}\n\n`
       );
-    } else if (e.message.includes("reading 'sendTransaction'")) {
+    } else if (e.message?.includes("reading 'sendTransaction'")) {
       const privateKey = process.env.PRIVATE_KEY || process.env.pk_localhost;
 
       console.error(
