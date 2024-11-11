@@ -43,5 +43,8 @@
     "sampoia:end": "hardhat run --network sampoia scripts/09-EndVotingProcess.js",
     "sampoia:indices": "hardhat run --network sampoia scripts/10-GetCandidatesWithIndices.js"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "ethers": "5.7.0"
+  }
 }
