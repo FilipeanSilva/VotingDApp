@@ -3,7 +3,7 @@
 
 # Voting DApp
 
-This project is a decentralized voting application designed specifically for the Arbitrum network but can also be tested locally using Hardhat’s local network. It leverages Solidity for smart contract logic and JavaScript scripts for deployment and interaction, allowing users to create, manage, and participate in voting processes on the blockchain.
+This project is a decentralized voting application designed specifically for the Arbitrum network but can also be tested locally using local network. It leverages Solidity for smart contract logic and JavaScript scripts for deployment and interaction, allowing users to create, manage, and participate in voting processes on the blockchain.
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
@@ -13,8 +13,9 @@ This project is a decentralized voting application designed specifically for the
     - [Local Deployment](#local-deployment)
     - [Arbitrum Deployment](#arbitrum-deployment)
 5. [Testing the Application](#testing-the-application)
-6. [Scripts Overview](#scripts-overview)
-7. [Troubleshooting](#troubleshooting)
+6. [Running Tests](#running-tests)
+7. [Scripts Overview](#scripts-overview)
+8. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -46,19 +47,18 @@ Ensure the following are installed on your system:
    touch .env
    ```
 
-2. Add the following environment variables to `.env`:
+2. Add the following environment variables to `.env` (The file can be left blank if you want to use the project local network):
 
    ```plaintext
    # Arbitrum Sampoia (Arbitrum Network Settings)
    ARBITRUM_SAMPOIA_RPC_URL="<YOUR_ARBITRUM_RPC_URL>"
 
-   # Private key for deployment (replace this placeholder with an actual 32-byte hex private key)
-   PRIVATE_KEY="0000000000000000000000000000000000000000000000000000000000000000"
+   # Private key for deployment
+   PRIVATE_KEY="<YOUR_PRIVATE_KEY>"
 
    # Local Network Settings
    localhost_url="http://127.0.0.1:8545"
-   # Local private key (replace this placeholder with an actual 32-byte hex private key)
-   pk_localhost="1111111111111111111111111111111111111111111111111111111111111111"
+   pk_localhost="<LOCAL_PRIVATE_KEY>"
 
    # Contract Address (leave blank for deployment)
    CONTRACT_ADDRESS=""
@@ -75,12 +75,17 @@ Ensure the following are installed on your system:
    npx hardhat node
    ```
 
-2. Run the local deployment script:
+2. Deploy the contract to the local network:
    ```bash
-   node scripts/00-Test_Deploy.js
+   npm run local
    ```
 
-   This script checks if the local Hardhat node is running and deploys the contract to it. It will update your `.env` file with the contract address if successful.
+   This script is designed to automate the setup of the '.env' file by checking if the local Hardhat node is running and deploying the contract to it. It will update the .env file with essential keys, including the contract address and private keys, if the file was initially empty.
+
+   > **Note:** If any issues arise with the local script or the .env file setup, you can configure the .env file manually as described in the documentation. After setting up the environment variables manually, deploy the contract by running the deployment script directly:
+   ```bash
+   npm run local:deploy
+   ```
 
 ### Arbitrum Deployment
 
@@ -91,9 +96,9 @@ For deployment on the Arbitrum Sampoia network:
    npx hardhat compile
    ```
 
-2. Deploy the contract on Arbitrum:
+2. Deploy the contract to Arbitrum:
    ```bash
-   node scripts/00-Deploy.js
+   npm run sampoia:deploy
    ```
 
    Upon successful deployment, the `CONTRACT_ADDRESS` will automatically update in your `.env` file. If not, copy the contract address from the console output and paste it manually into the `.env` file.
@@ -104,48 +109,80 @@ After deployment, follow these steps to test the voting process:
 
 1. **Add Candidates**:
    ```bash
-   node scripts/01-AddCandidates.js
+   npm run local:add        # Local Network
+   npm run sampoia:add      # Arbitrum Network
    ```
 
 2. **Start Voting Process**:
    Set `VOTING_DURATION` in `.env` (e.g., `600` for 10 minutes) and run:
    ```bash
-   node scripts/07-StartVotingProcess.js
+   npm run local:start      # Local Network
+   npm run sampoia:start    # Arbitrum Network
    ```
 
 3. **Cast a Vote**:
    Specify `candidateIndex` in `05-Vote.js` and execute:
    ```bash
-   node scripts/05-Vote.js
+   npm run local:vote       # Local Network
+   npm run sampoia:vote     # Arbitrum Network
    ```
 
 4. **Retrieve Voting Results**:
    ```bash
-   node scripts/06-GetAllVotes.js
+   npm run local:votes      # Local Network
+   npm run sampoia:votes    # Arbitrum Network
    ```
 
 5. **End Voting Process**:
    After the voting period ends, finalize the process:
    ```bash
-   node scripts/09-EndVotingProcess.js
+   npm run local:end        # Local Network
+   npm run sampoia:end      # Arbitrum Network
    ```
+
+   > **Note:** You can check if the voting period has ended by running the time script:
+   ```bash
+   npm run local:time       # Local Network
+   npm run sampoia:time     # Arbitrum Network
+   ```
+   > **Important:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote).
+
+## Running Tests
+
+This project includes automated tests that run on a non-persistent network. To execute all tests, use:
+
+```bash
+npm run test
+```
+
+> **Note:** The tests run using the hardhat network, which is temporary and resets with each test run. Running npx hardhat test without specifying the Hardhat network will not work as expected because it requires a non-persistent network. By default, the Hardhat network is set to be persistent to simulate a working environment similar to the Arbitrum network.    Please use 'npx hardhat test --network hardhat' or 'npm run test' to ensure the tests run correctly on the intended non-persistent network.
 
 ## Scripts Overview
 
-| Script                          | Description                                                                                       |
-|---------------------------------|---------------------------------------------------------------------------------------------------|
-| **00-Deploy.js**                | Deploys contract to Arbitrum. Updates `.env` with contract address.                               |
-| **00-Test_Deploy.js**           | Deploys contract to a local Hardhat network. Checks `.env` structure and network status.          |
-| **01-AddCandidates.js**         | Adds candidates to the contract.                                                                 |
-| **02-GetRemainingTime.js**      | Retrieves the remaining time for the voting period.                                              |
-| **03-GetVotingStatus.js**       | Checks the voting status (`Not Started`, `Ongoing`, or `Ended`).                                 |
-| **04-GetAllCandidates.js**      | Fetches all candidate details (names and vote counts).                                          |
-| **05-Vote.js**                  | Casts a vote for a candidate by index.                                                           |
-| **06-GetAllVotes.js**           | Displays all candidates and vote counts.                                                         |
-| **07-StartVotingProcess.js**    | Initiates voting with a set duration.                                                            |
-| **08-RemoveCandidate.js**       | Removes a candidate by index.                                                                    |
-| **09-EndVotingProcess.js**      | Ends voting if duration has expired.                                                             |
-| **10-GetCandidatesWithIndices.js** | Retrieves candidates with their indices for reference.                                      |
+### Deployment
+- `npm run local` / `npm run sampoia:deploy` – Deploys the contract to the local network or Arbitrum Sampoia network.
+
+### Candidate Management
+- `npm run [local|sampoia]:add` – Adds candidates to the contract.
+- `npm run [local|sampoia]:remove` – Removes a candidate by index.
+
+### Voting Process Control
+- `npm run [local|sampoia]:start` – Starts the voting process.
+- `npm run [local|sampoia]:end` – Ends the voting process.
+
+### Status and Results
+- `npm run [local|sampoia]:time` – Retrieves remaining time for the voting period.  
+  > **Note:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote).
+- `npm run [local|sampoia]:status` – Checks the current voting status.
+- `npm run [local|sampoia]:candidates` – Fetches candidate details.
+- `npm run [local|sampoia]:votes` – Displays the vote count for each candidate.
+- `npm run [local|sampoia]:indices` – Retrieves candidates with their indices.
+
+### Voting Action
+- `npm run [local|sampoia]:vote` – Casts a vote for a candidate by index.
+
+> **Note:** Replace `[local|sampoia]` with `local` for the local network or `sampoia` for the Arbitrum network.
+
 
 ## Troubleshooting
 

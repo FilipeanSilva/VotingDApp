@@ -5,7 +5,6 @@ module.exports = {
   solidity: '0.8.11',
   defaultNetwork: 'localhost',
   networks: {
-
     hardhat: {
       accounts: {
         count: 10,
@@ -23,6 +22,7 @@ module.exports = {
           sampoia: {
             url: process.env.ARBITRUM_SAMPOIA_RPC_URL,
             accounts: [process.env.PRIVATE_KEY],
+            chainId: 421614,
           },
         }
       : {}),

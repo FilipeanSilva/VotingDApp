@@ -55,7 +55,7 @@ const ensureEnvStructure = async () => {
 
     const requiredSections = {
       '# Arbitrum Sampoia': [
-        'ARBITRUM_SAMPOIA_RPC_URL="https://arb-sepolia.g.alchemy.com/v2/your-alchemy-key"',
+        'ARBITRUM_SAMPOIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"',
         'PRIVATE_KEY=""',
       ],
       '# Local Network Settings': [
