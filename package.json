@@ -17,6 +17,7 @@
     "typechain": "^8.3.0"
   },
   "scripts": {
+    "test": "hardhat test --network hardhat",
     "reset": "git checkout -- . && git clean -fd",
     "clean": "rm -rf node_modules artifacts package-lock.json yarn.lock cache yarn-error.log",
     "local": "node scripts/00-Test_Deploy.js",
