@@ -166,10 +166,9 @@ Follow these steps to set up and test the **VotingDApp**. Setting up a wallet fo
    This script is designed to automate the setup of the '.env' file by checking if the local Hardhat node is running and deploying the contract to it. It will update the .env file with essential keys, including the contract address and private keys, if the file was initially empty.
 
    > **Note:** If any issues arise with the local script or the .env file setup, you can configure the .env file manually as described in the documentation. After setting up the environment variables manually, deploy the contract by running the deployment script directly:
-
-   ```bash
-   npm run local:deploy
-   ```
+   >```bash
+   >npm run local:deploy
+   >```
 
 ### Arbitrum Deployment
 
