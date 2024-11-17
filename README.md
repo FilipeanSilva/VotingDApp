@@ -249,7 +249,7 @@ After deployment, follow these steps to test the voting process:
    npm run sampoia:time     # Arbitrum Network
    ```
 
-   > **Important:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote).
+   > **Important:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote). To update the remaining time, please vote using another private key.
 
 ## Running Tests
 
