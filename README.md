@@ -196,6 +196,8 @@ After deployment, follow these steps to test the voting process:
 
    ```bash
    npm run local:add        # Local Network
+   ```
+   ```bash
    npm run sampoia:add      # Arbitrum Network
    ```
 
@@ -204,6 +206,8 @@ After deployment, follow these steps to test the voting process:
 
    ```bash
    npm run local:start      # Local Network
+   ```
+   ```bash
    npm run sampoia:start    # Arbitrum Network
    ```
 
@@ -212,6 +216,8 @@ After deployment, follow these steps to test the voting process:
 
    ```bash
    npm run local:vote       # Local Network
+   ```
+   ```bash
    npm run sampoia:vote     # Arbitrum Network
    ```
 
@@ -219,6 +225,8 @@ After deployment, follow these steps to test the voting process:
 
    ```bash
    npm run local:votes      # Local Network
+   ```
+   ```bash
    npm run sampoia:votes    # Arbitrum Network
    ```
 
@@ -227,6 +235,8 @@ After deployment, follow these steps to test the voting process:
 
    ```bash
    npm run local:end        # Local Network
+   ```
+   ```bash
    npm run sampoia:end      # Arbitrum Network
    ```
 
@@ -234,6 +244,8 @@ After deployment, follow these steps to test the voting process:
 
    ```bash
    npm run local:time       # Local Network
+   ```
+   ```bash
    npm run sampoia:time     # Arbitrum Network
    ```
 
@@ -251,34 +263,127 @@ npm run test
 
 ## Scripts Overview
 
-### Deployment
+After deployment, follow these commands to interact with the Voting DApp:
 
-- `npm run local` / `npm run sampoia:deploy` – Deploys the contract to the local network or Arbitrum Sampoia network.
+### **Deployment**
 
-### Candidate Management
+1. **Deploy the Contract**: Deploys the smart contract
 
-- `npm run [local|sampoia]:add` – Adds candidates to the contract.
-- `npm run [local|sampoia]:remove` – Removes a candidate by index.
+   ```bash
+   npm run local          # Local Network
+   ```
+   ```bash
+   npm run sampoia:deploy # Arbitrum Network
+   ```
 
-### Voting Process Control
+---
 
-- `npm run [local|sampoia]:start` – Starts the voting process.
-- `npm run [local|sampoia]:end` – Ends the voting process.
+### **Candidate Management**
 
-### Status and Results
+1. **Add Candidates**: Adds one or more candidates to the contract 
 
-- `npm run [local|sampoia]:time` – Retrieves remaining time for the voting period.
-  > **Note:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote). To update the remaining time please vote using other private key.
-- `npm run [local|sampoia]:status` – Checks the current voting status.
-- `npm run [local|sampoia]:candidates` – Fetches candidate details.
-- `npm run [local|sampoia]:votes` – Displays the vote count for each candidate.
-- `npm run [local|sampoia]:indices` – Retrieves candidates with their indices.
+   ```bash
+   npm run local:add        # Local Network
+   ```
+   ```bash
+   npm run sampoia:add      # Arbitrum Network
+   ```
 
-### Voting Action
+2. **Remove Candidates**:    Removes a candidate by index from the contract
 
-- `npm run [local|sampoia]:vote` – Casts a vote for a candidate by index.
+   ```bash
+   npm run local:remove     # Local Network
+   ```
+   ```bash
+   npm run sampoia:remove   # Arbitrum Network
+   ```
 
-> **Note:** Replace `[local|sampoia]` with `local` for the local network or `sampoia` for the Arbitrum network.
+---
+
+### **Voting Process Control**
+
+1. **Start Voting Process**:    Initiates the voting period
+
+   ```bash
+   npm run local:start      # Local Network
+   ```
+   ```bash
+   npm run sampoia:start    # Arbitrum Network
+   ```
+
+2. **End Voting Process**:    Finalizes the voting period and locks in the results
+
+   ```bash
+   npm run local:end        # Local Network
+   ```
+   ```bash
+   npm run sampoia:end      # Arbitrum Network
+   ```
+
+---
+
+### **Status and Results**
+
+1. **Retrieve Remaining Time**:    Fetches the remaining time for the voting period
+
+   ```bash
+   npm run local:time       # Local Network
+   ```
+   ```bash
+   npm run sampoia:time     # Arbitrum Network
+   ```
+
+   > **Note:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote). To update the remaining time, please vote using another private key.
+
+2. **Check Voting Status**:    Retrieves the current status of the voting process (e.g., active or ended)
+
+   ```bash
+   npm run local:status     # Local Network
+   ```
+   ```bash
+   npm run sampoia:status   # Arbitrum Network
+   ```
+
+3. **Fetch Candidate Details**:     Lists all candidates and their details
+
+   ```bash
+   npm run local:candidates # Local Network
+   ```
+   ```bash
+   npm run sampoia:candidates # Arbitrum Network
+   ```
+
+4. **Display Vote Count**:   Displays the vote count for each candidate
+
+
+   ```bash
+   npm run local:votes      # Local Network
+   ```
+   ```bash
+   npm run sampoia:votes    # Arbitrum Network
+   ```
+
+5. **Retrieve Candidate Indices**:    Retrieves the indices of all candidates 
+
+   ```bash
+   npm run local:indices    # Local Network
+   ```
+   ```bash
+   npm run sampoia:indices  # Arbitrum Network
+   ```
+
+---
+
+### **Voting Action**
+
+1. **Cast a Vote**:    Casts a vote for a specified candidate index
+
+   ```bash
+   npm run local:vote       # Local Network
+   ```
+   ```bash
+   npm run sampoia:vote     # Arbitrum Network
+   ```
 
 ## Troubleshooting
 
