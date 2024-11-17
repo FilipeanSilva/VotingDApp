@@ -4,17 +4,39 @@ This project is a decentralized voting application designed specifically for the
 
 ## Table of Contents
 
-1. [Prerequisites](#prerequisites)
-2. [Setup](#setup)
-3. [Environment Configuration](#environment-configuration)
-4. [Deployment](#deployment)
+1. [Voting DApp](#voting-dapp)
+2. [Table of Contents](#table-of-contents)
+3. [Prerequisites](#prerequisites)
+4. [Setup](#setup)
+   - [1. Clone the Repository](#1-clone-the-repository)
+   - [2. Install Dependencies](#2-install-dependencies)
+   - [3. Configure MetaMask for the Arbitrum Sepolia Testnet (Optional)](#3-configure-metamask-for-the-arbitrum-sepolia-testnet-optional)
+      - [Step 1: Install MetaMask](#step-1-install-metamask)
+      - [Step 2: Create a Wallet](#step-2-create-a-wallet)
+      - [Step 3: Add the Arbitrum Sepolia Testnet to MetaMask](#step-3-add-the-arbitrum-sepolia-testnet-to-metamask)
+      - [Step 4: Obtain Testnet ETH](#step-4-obtain-testnet-eth)
+5. [Environment Configuration](#environment-configuration)
+6. [Deployment](#deployment)
    - [Local Deployment](#local-deployment)
    - [Arbitrum Deployment](#arbitrum-deployment)
-5. [Testing the Application](#testing-the-application)
-6. [Running Tests](#running-tests)
-7. [Scripts Overview](#scripts-overview)
-8. [Troubleshooting](#troubleshooting)
-
+7. [Testing the Application](#testing-the-application)
+8. [Running Tests](#running-tests)
+9. [Scripts Overview](#scripts-overview)
+   - [Deployment](#deployment-1)
+   - [Candidate Management](#candidate-management)
+   - [Voting Process Control](#voting-process-control)
+   - [Status and Results](#status-and-results)
+   - [Voting Action](#voting-action)
+10. [Troubleshooting](#troubleshooting)
+    - [1. CONTRACT_ADDRESS Not Set](#1-contract_address-not-set)
+    - [2. Insufficient Funds](#2-insufficient-funds)
+    - [3. Local Network Issues](#3-local-network-issues)
+    - [4. MetaMask Configuration Issues](#4-metamask-configuration-issues)
+    - [5. Deployment Script Errors](#5-deployment-script-errors)
+    - [6. Voting Period Not Ending](#6-voting-period-not-ending)
+    - [7. Hardhat Node Resets](#7-hardhat-node-resets)
+    - [8. Test Failures](#8-test-failures)
+    - [9. Faucet Issues](#9-faucet-issues)
 ## Prerequisites
 
 Ensure the following are installed on your system:
@@ -25,7 +47,7 @@ Ensure the following are installed on your system:
 - **Metamask** or another wallet if testing on Arbitrum testnet.
 
  ## Setup
-
+(#3-configure-metamask-for-the-arbitrum-sepolia-testnet-optional)
 Follow these steps to set up and test the **VotingDApp**. Setting up a wallet for testing on the Arbitrum Sepolia Testnet is optional [(Step 3)](#3-configure-metamask-for-the-arbitrum-sepolia-testnet-optional).
 
  ### 1. Clone the Repository
@@ -130,7 +152,7 @@ Follow these steps to set up and test the **VotingDApp**. Setting up a wallet fo
    >If these keys/values are missing or invalid, either:
    >  - Add a valid value for the corresponding key.
    >  - For `pk_localhost`, you can use the following Hardhat private key:
-   >    `"0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a"`.
+   >    `"0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"`.
    >  - Remove these keys if they are unnecessary for your deployment:
    >    - `PRIVATE_KEY` for Arbitrum Deployment
    >    - `pk_localhost` for Local Deployment.
@@ -247,7 +269,7 @@ npm run test
 ### Status and Results
 
 - `npm run [local|sampoia]:time` – Retrieves remaining time for the voting period.
-  > **Note:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote).
+  > **Note:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote). To update the remaining time please vote using other private key.
 - `npm run [local|sampoia]:status` – Checks the current voting status.
 - `npm run [local|sampoia]:candidates` – Fetches candidate details.
 - `npm run [local|sampoia]:votes` – Displays the vote count for each candidate.
@@ -261,8 +283,111 @@ npm run test
 
 ## Troubleshooting
 
-- **CONTRACT_ADDRESS not set**: Ensure contract deployment is successful and `.env` is updated.
-- **Insufficient funds**: Check wallet balance for gas fees on Arbitrum.
-- **Local network issues**: Verify that Hardhat node is running for local deployment.
+This section provides solutions for common issues you might encounter while deploying or interacting with the Voting DApp.
+
+### **1. CONTRACT_ADDRESS Not Set**
+
+**Problem**: The `CONTRACT_ADDRESS` in the `.env` file is empty or missing after deployment.
+
+**Solution**:
+- Ensure that the contract deployment was successful. Check the terminal for the contract address after running the deployment script.
+- If the address is displayed in the terminal but not updated in `.env`, manually copy and paste the address into the `CONTRACT_ADDRESS` variable.
+- Double-check that the `.env` file is correctly formatted and saved without additional spaces or invalid characters.
+
+---
+
+### **2. Insufficient Funds**
+
+**Problem**: Deployment or transactions fail due to lack of ETH in the wallet for gas fees.
+
+**Solution**:
+- For local testing:
+  - Use the Hardhat node’s pre-funded accounts. These accounts already have a large amount of ETH for testing purposes.
+- For Arbitrum Sepolia:
+  - Obtain testnet ETH from a trusted faucet. For example:
+    - [L2 Faucet](https://www.l2faucet.com/arbitrum/)
+    - [Arbitrum Sepolia Faucet List](https://arbitrum.faucet.dev/ArbSepolia)
+  - Check your MetaMask wallet balance to confirm receipt of ETH. If the funds do not arrive, try using another faucet or verify the network configuration in MetaMask.
+
+---
+
+### **3. Local Network Issues**
+
+**Problem**: Scripts fail to run on the local network or the deployment process times out.
+
+**Solution**:
+- Verify that the Hardhat local node is running:
+  - Open a terminal and start the node with `npx hardhat node`.
+- Ensure the `pk_localhost` variable in the `.env` file is correctly set with a valid private key. You can use the default Hardhat testing private key:  
+  `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`.
+- Confirm that the local network URL is correctly configured:
+  - `localhost_url="http://127.0.0.1:8545"`
+
+---
+
+### **4. MetaMask Configuration Issues**
+
+**Problem**: MetaMask is not connecting to the correct network, or transactions fail to process.
+
+**Solution**:
+- Check that MetaMask is configured for the correct network:
+  - For local testing, ensure MetaMask is connected to the localhost network at `http://127.0.0.1:8545`.
+  - For Arbitrum Sepolia, verify that the network is added and active with the correct RPC URL:  
+    `https://sepolia-rollup.arbitrum.io/rpc`.
+- Ensure your wallet has sufficient funds to cover gas fees.
+
+---
+
+### **5. Deployment Script Errors**
+
+**Problem**: Deployment scripts fail to execute or terminate with errors.
+
+**Solution**:
+- Confirm that all dependencies are installed by running `npm install`.
+- Check the Hardhat configuration (`hardhat.config.js`) for any syntax errors or missing configurations.
+- If deploying to Arbitrum Sepolia, verify that the `ARBITRUM_SAMPOIA_RPC_URL` and `PRIVATE_KEY` variables are set in the `.env` file.
+
+---
+
+### **6. Voting Period Not Ending**
+
+**Problem**: The voting period remains active even after the specified time duration.
+
+**Solution**:
+- Remember that the voting period duration is updated only when a state change occurs (e.g., casting a vote). If the voting period appears to be stuck, trigger a state change by interacting with the contract (e.g., add a vote or finalize the process).
+- Double-check the `VOTING_DURATION` in the `.env` file to ensure it is set correctly.
+
+---
+
+### **7. Hardhat Node Resets**
+
+**Problem**: The local network state resets when restarting the Hardhat node, causing deployed contracts and data to disappear.
+
+**Solution**:
+- Avoid restarting the Hardhat node during testing. If a restart is necessary, re-deploy the contracts and reset the `.env` variables accordingly.
+- Use Hardhat's `scripts` to automate re-deployment and setup after a node restart.
+
+---
+
+### **8. Test Failures**
+
+**Problem**: Automated tests fail or do not produce the expected results.
+
+**Solution**:
+- Verify that the Hardhat network is set to a non-persistent mode for testing:
+  - Run tests using `npm run test` or `npx hardhat test --network hardhat`.
+- Check for syntax errors or incorrect assumptions in the test scripts.
+- If you made changes to the contract, ensure the tests are updated to match the new functionality.
+
+---
+
+### **9. Faucet Issues**
+
+**Problem**: Faucets do not provide testnet ETH, or funds are delayed.
+
+**Solution**:
+- Try alternative faucets if the one you are using is unavailable or out of funds.
+- Check the [Arbitrum Network Status](https://status.arbitrum.io/) for any ongoing issues with the Sepolia network.
+- If possible, request testnet ETH from a colleague or team member who has access to the testnet.
 
 ---
