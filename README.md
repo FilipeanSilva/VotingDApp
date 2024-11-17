@@ -47,7 +47,6 @@ Ensure the following are installed on your system:
 - **Metamask** or another wallet if testing on Arbitrum testnet.
 
  ## Setup
-(#3-configure-metamask-for-the-arbitrum-sepolia-testnet-optional)
 Follow these steps to set up and test the **VotingDApp**. Setting up a wallet for testing on the Arbitrum Sepolia Testnet is optional [(Step 3)](#3-configure-metamask-for-the-arbitrum-sepolia-testnet-optional).
 
  ### 1. Clone the Repository
@@ -202,7 +201,8 @@ After deployment, follow these steps to test the voting process:
    ```
 
 2. **Start Voting Process**:
-   Set `VOTING_DURATION` in `.env` (e.g., `600` for 10 minutes) and run:
+   Specify the `VOTING_DURATION` in the `.env` file (e.g., `600` for a 10-minute duration). 
+   If not set, the default duration of 600 seconds will be used. Then, execute:
 
    ```bash
    npm run local:start      # Local Network
@@ -212,7 +212,7 @@ After deployment, follow these steps to test the voting process:
    ```
 
 3. **Cast a Vote**:
-   Specify `candidateIndex` in `05-Vote.js` and execute:
+   Specify the `candidateIndex` in `05-Vote.js` before executing the script. By default, the candidate with index `2` is selected. To cast a vote, execute:
 
    ```bash
    npm run local:vote       # Local Network
@@ -423,7 +423,7 @@ This section provides solutions for common issues you might encounter while depl
 - Verify that the Hardhat local node is running:
   - Open a terminal and start the node with `npx hardhat node`.
 - Ensure the `pk_localhost` variable in the `.env` file is correctly set with a valid private key. You can use the default Hardhat testing private key:  
-  `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`.
+  `"0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"`.
 - Confirm that the local network URL is correctly configured:
   - `localhost_url="http://127.0.0.1:8545"`
 
