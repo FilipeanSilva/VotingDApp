@@ -123,6 +123,16 @@ Follow these steps to set up and test the **VotingDApp**. Setting up a wallet fo
    npx hardhat node
    ```
 
+   **Note**:  If the previous command encounters an error, ensure the following:
+
+   - The `PRIVATE_KEY` and `pk_localhost` variable contains a valid private key in `.env` file.
+
+   If these keys/values are missing or invalid, either:
+   - Add a valid value for the corresponding key.
+   - Remove these keys if they are unnecessary for your deployment:
+      -  `PRIVATE_KEY` for Arbitrum Deployment
+      -  `pk_localhost` for Local Deployment.
+
 2. Deploy the contract to the local network:
 
    ```bash
