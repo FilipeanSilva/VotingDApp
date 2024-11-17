@@ -26,7 +26,7 @@ Ensure the following are installed on your system:
 
  ## Setup
 
-Follow these steps to set up and test the **VotingDApp**. Setting up a wallet [(3.)](#3-configure-metamask-for-the-arbitrum-sepolia-testnet-optional) for testing on the Arbitrum Sepolia Testnet is optional.
+Follow these steps to set up and test the **VotingDApp**. Setting up a wallet for testing on the Arbitrum Sepolia Testnet is optional [(Step 3)](#3-configure-metamask-for-the-arbitrum-sepolia-testnet-optional).
 
  ### 1. Clone the Repository
 
