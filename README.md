@@ -33,7 +33,7 @@ Follow these steps to set up and test the **VotingDApp**. Setting up a wallet [(
  Clone this repository and navigate to the project directory:
 
  ```bash
- git clone <Link>
+ git clone https://gitlab.inf.unibe.ch/crypto-public/sem-crypto-hs24-arb.git
  cd sem-crypto-hs24-arb/dapp2/VotingDApp
  ```
 
