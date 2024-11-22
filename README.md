@@ -495,3 +495,51 @@ This section provides solutions for common issues you might encounter while depl
 - If possible, request testnet ETH from a colleague or team member who has access to the testnet.
 
 ---
+
+## Screenshots
+
+Below are screenshots illustrating the commands and operations available in the project. Each screenshot corresponds to a specific feature or functionality of the Voting DApp, organized in the order they should be executed:
+
+1. **`npx hardhat node`**  
+   Starts the local Hardhat network node for testing and development.
+      ![Start Hardhat Node](Screenshots/npx_hardhat_node.png "Starting the Hardhat Node")
+
+
+2. **`.env file`**  
+   Set up and configure the `.env` file with the necessary environment variables, including private keys and RPC URLs.
+
+3. **`npm run local`**  
+   Deploys the contract to the local Hardhat network.
+
+4. **`npm run add`**  
+   Adds a candidate to the voting process.
+
+5. **`npm run start`**  
+   Starts the voting process with the specified duration.
+
+6. **`npm run vote`**  
+   Casts a vote for the specified candidate index.
+
+7. **`npm run time first vote`**  
+   Checks the remaining time for the voting process after the first vote.
+
+8. **`npm run vote (2)`**  
+   Casts a second vote for the specified candidate.
+
+9. **`npm run time second vote`**  
+   Checks the remaining time for the voting process after the second vote.
+
+10. **`npm run votes`**  
+    Displays the current vote count for all candidates.
+
+11. **`npm run remove`**  
+    Removes a candidate by index from the voting process.
+
+12. **`npm run status`**  
+    Checks the current status of the voting process (e.g., active or ended).
+
+13. **`npm run end`**  
+    Ends the voting process and locks in the results.
+
+14. **`npm run indices`**  
+    Displays all candidate indices for the current voting process.
