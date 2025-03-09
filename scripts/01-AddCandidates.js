@@ -8,15 +8,21 @@ async function main() {
     process.exit(1);
   }
 
-  const candidateNames = ['Alice', 'Bob', 'Charlie', 'Dave'];
-  console.log('Preparing to add candidates:', candidateNames);
+  // Read candidates from environment variable
+  const candidates = process.env.CANDIDATES ? process.env.CANDIDATES.split(',') : [];
+  if (candidates.length === 0) {
+    console.error('Error: No candidates provided. Set the CANDIDATES environment variable.');
+    process.exit(1);
+  }
+
+  console.log('Preparing to add candidates:', candidates);
 
   const Voting = await hre.ethers.getContractFactory('Voting');
   const votingContract = Voting.attach(contractAddress);
 
   // Add candidates and wait for confirmation
   try {
-    await addCandidates(votingContract, candidateNames);
+    await addCandidates(votingContract, candidates);
     console.log('Candidates added successfully!');
   } catch (error) {
     console.error(
@@ -28,13 +34,9 @@ async function main() {
 
 // Function to add candidates to the voting contract
 async function addCandidates(contract, candidates) {
-  if (!Array.isArray(candidates) || candidates.length === 0) {
-    throw new Error('Candidate names must be provided as a non-empty array.');
-  }
-
   console.log('Submitting transaction to add candidates...');
   const tx = await contract.addCandidates(candidates);
-  await tx.wait(); // Wait for the transaction to be mined
+  await tx.wait();
   console.log('Transaction mined. Candidates were successfully added.');
 }
 

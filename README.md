@@ -19,15 +19,9 @@ This project is a decentralized voting application designed specifically for the
 6. [Deployment](#deployment)
    - [Local Deployment](#local-deployment)
    - [Arbitrum Deployment](#arbitrum-deployment)
-7. [Testing the Application](#testing-the-application)
+7. [Application Testing and Overview](#application-testing-and-overview)
 8. [Running Tests](#running-tests)
-9. [Scripts Overview](#scripts-overview)
-   - [Deployment](#deployment-1)
-   - [Candidate Management](#candidate-management)
-   - [Voting Process Control](#voting-process-control)
-   - [Status and Results](#status-and-results)
-   - [Voting Action](#voting-action)
-10. [Troubleshooting](#troubleshooting)
+9. [Troubleshooting](#troubleshooting)
     - [1. CONTRACT_ADDRESS Not Set](#1-contract_address-not-set)
     - [2. Insufficient Funds](#2-insufficient-funds)
     - [3. Local Network Issues](#3-local-network-issues)
@@ -37,6 +31,8 @@ This project is a decentralized voting application designed specifically for the
     - [7. Hardhat Node Resets](#7-hardhat-node-resets)
     - [8. Test Failures](#8-test-failures)
     - [9. Faucet Issues](#9-faucet-issues)
+1. [Conclusion](#conclusion)
+
 ## Prerequisites
 
 Ensure the following are installed on your system:
@@ -54,8 +50,7 @@ Follow these steps to set up and test the **VotingDApp**. Setting up a wallet fo
  Clone this repository and navigate to the project directory:
 
  ```bash
- git clone https://gitlab.inf.unibe.ch/crypto-public/sem-crypto-hs24-arb.git
- cd sem-crypto-hs24-arb/dapp2/VotingDApp
+ cd VotingDApp
  ```
 
  ### 2. Install Dependencies
@@ -187,69 +182,112 @@ For deployment on the Arbitrum Sampoia network:
 
    Upon successful deployment, the `CONTRACT_ADDRESS` will automatically update in your `.env` file. If not, copy the contract address from the console output and paste it manually into the `.env` file.
 
-## Testing the Application
+## Application Testing and Overview
 
-After deployment, follow these steps to test the voting process:
+This section provides a step-by-step guide to testing the Voting DApp using scripts and visual support from screenshots.
 
-1. **Add Candidates**:
-
+1. **Starting the Hardhat Node**:  
+   Execute the following command to launch the Hardhat local node. Keep this process running in a separate terminal while executing subsequent commands in a new terminal:
    ```bash
-   npm run local:add        # Local Network
+   npx hardhat node
    ```
-   ```bash
-   npm run sampoia:add      # Arbitrum Network
-   ```
+   ![Start Hardhat Node](Screenshots/npx_hardhat_node.png "Starting the Hardhat Node")
 
-2. **Start Voting Process**:
-   Specify the `VOTING_DURATION` in the `.env` file (e.g., `600` for a 10-minute duration). 
-   If not set, the default duration of 600 seconds will be used. Then, execute:
-
+2. **Creating a `.env` File (If it doesn't already exist)**:  
+   Create an `.env` file in the root directory to configure environment variables:  
    ```bash
-   npm run local:start      # Local Network
-   ```
-   ```bash
-   npm run sampoia:start    # Arbitrum Network
+   touch .env
    ```
 
-3. **Cast a Vote**:
-   Specify the `candidateIndex` in `05-Vote.js` before executing the script. By default, the candidate with index `2` is selected. To cast a vote, execute:
+3. **Environment Variables Setup**:  
+   Ensure that your `.env` file includes the required configurations for deploying contracts, including private keys and RPC URLs. You can add these manually, or they may be generated after running `npm run local`.  
+   Example of the `.env` file contents after `npm run local` command:  
+   ![Environment Variables Setup](Screenshots/env_file.png "Environment Variables Setup")
 
+4. **Deploying the Contract (Skip if already completed in a previous step)**:  
+   Deploy the contract to the local Hardhat network:  
+   ```bash
+   npm run local
+   ```
+   ![Deploying Contract](Screenshots/npm_run_local.png "Deploying Contract to Local Network")
+
+5. **Adding Candidates**:  
+   Add one or more candidates to the voting process using the script:  
+   ```bash
+   CANDIDATES=Alice,Bob,Charlie,Dave npm run local:add       # Local Network
+   ```
+   ![Adding Candidates](Screenshots/npm_run_add.png "Adding Candidates to the Voting Process")
+
+6. **Retrieving Candidate Indices**:  
+   Retrieve all candidate indices to confirm they have been successfully added to the voting process and to identify their indices for voting or removal purposes:  
+   ```bash
+   npm run local:indices    # Local Network
+   ```
+   ![Candidate Indices](Screenshots/npm_run_indices.png "Retrieving Candidate Indices")
+
+7. **Removing a Candidate**:  
+   Remove a candidate by his index from the voting process before voting starts using 'CANDIDATE_INDEX' in the following command:  
+   ```bash
+   CANDIDATE_INDEX=2 npm run local:remove       # Local Network
+   ```
+   ![Removing a Candidate](Screenshots/npm_run_remove.png "Removing a Candidate")
+
+8. **Starting the Voting Process**:  
+   Start the voting session. The duration of the voting process can be set in the `.env` file using the `VOTING_DURATION` variable (default: 600 seconds):  
+   ```bash
+   npm run local:start
+   ```
+   ![Starting the Voting Process](Screenshots/npm_run_start.png "Starting the Voting Process")
+
+9. **Casting Votes (First Vote)**:  
+   Cast your vote for a candidate. Specify the `CANDIDATE_INDEX` in the voting command when running this command:  
    ```bash
    npm run local:vote       # Local Network
    ```
-   ```bash
-   npm run sampoia:vote     # Arbitrum Network
-   ```
+   ![Casting First Vote](Screenshots/npm_run_vote_first_vote.png "Casting First Vote")
 
-4. **Retrieve Voting Results**:
+10. **Checking Remaining Time After First Vote**:  
+    Check the remaining time for the voting process after casting the first vote:  
+    ```bash
+    npm run local:time       # Local Network
+    ```
+    ![Remaining Time After First Vote](Screenshots/npm_run_time_after_first_vote.png "Checking Remaining Time After First Vote")
 
-   ```bash
-   npm run local:votes      # Local Network
-   ```
-   ```bash
-   npm run sampoia:votes    # Arbitrum Network
-   ```
+11. **Retrieving Voting Results**:  
+    Display the current vote counts for all candidates:  
+    ```bash
+    npm run local:votes      # Local Network
+    ```
+    ![Voting Results](Screenshots/npm_run_votes.png "Displaying Voting Results")
 
-5. **End Voting Process**:
-   After the voting period ends, finalize the process:
+12. **Casting Votes (Second Vote)**:  
+    Cast another vote using a different private key:  
+    ```bash
+    npm run local:vote       # Local Network
+    ```
+    ![Casting Second Vote](Screenshots/npm_run_vote_second_vote.png "Casting Second Vote")
 
-   ```bash
-   npm run local:end        # Local Network
-   ```
-   ```bash
-   npm run sampoia:end      # Arbitrum Network
-   ```
+13. **Checking Remaining Time After Second Vote**:  
+    Verify the remaining time for the voting process after casting the second vote:  
+    ```bash
+    npm run local:time       # Local Network
+    ```
+    ![Remaining Time After Second Vote](Screenshots/npm_run_time_after_second_vote.png "Checking Remaining Time After Second Vote")
 
-   > **Note:** You can check if the voting period has ended by running the time script:
+14. **Checking Voting Status**:  
+    Check the current status of the voting process (e.g., NotStarted, Ongoing, Ended):  
+    ```bash
+    npm run local:status     # Local Network
+    ```
+    ![Checking Voting Status](Screenshots/npm_run_status.png "Checking Voting Status")
 
-   ```bash
-   npm run local:time       # Local Network
-   ```
-   ```bash
-   npm run sampoia:time     # Arbitrum Network
-   ```
+15. **Ending the Voting Process**:  
+    End the voting process and lock in the results:  
+    ```bash
+    npm run local:end        # Local Network
+    ```
+    ![Ending the Voting Process](Screenshots/npm_run_end.png "Ending the Voting Process")
 
-   > **Important:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote). To update the remaining time, please vote using another private key.
 
 ## Running Tests
 
@@ -260,130 +298,6 @@ npm run test
 ```
 
 > **Note:** The tests run using the hardhat network, which is temporary and resets with each test run. Running npx hardhat test without specifying the Hardhat network will not work as expected because it requires a non-persistent network. By default, the Hardhat network is set to be persistent to simulate a working environment similar to the Arbitrum network. Please use 'npx hardhat test --network hardhat' or 'npm run test' to ensure the tests run correctly on the intended non-persistent network.
-
-## Scripts Overview
-
-After deployment, follow these commands to interact with the Voting DApp:
-
-### **Deployment**
-
-1. **Deploy the Contract**: Deploys the smart contract
-
-   ```bash
-   npm run local          # Local Network
-   ```
-   ```bash
-   npm run sampoia:deploy # Arbitrum Network
-   ```
-
----
-
-### **Candidate Management**
-
-1. **Add Candidates**: Adds one or more candidates to the contract 
-
-   ```bash
-   npm run local:add        # Local Network
-   ```
-   ```bash
-   npm run sampoia:add      # Arbitrum Network
-   ```
-
-2. **Remove Candidates**:    Removes a candidate by index from the contract
-
-   ```bash
-   npm run local:remove     # Local Network
-   ```
-   ```bash
-   npm run sampoia:remove   # Arbitrum Network
-   ```
-
----
-
-### **Voting Process Control**
-
-1. **Start Voting Process**:    Initiates the voting period
-
-   ```bash
-   npm run local:start      # Local Network
-   ```
-   ```bash
-   npm run sampoia:start    # Arbitrum Network
-   ```
-
-2. **End Voting Process**:    Finalizes the voting period and locks in the results
-
-   ```bash
-   npm run local:end        # Local Network
-   ```
-   ```bash
-   npm run sampoia:end      # Arbitrum Network
-   ```
-
----
-
-### **Status and Results**
-
-1. **Retrieve Remaining Time**:    Fetches the remaining time for the voting period
-
-   ```bash
-   npm run local:time       # Local Network
-   ```
-   ```bash
-   npm run sampoia:time     # Arbitrum Network
-   ```
-
-   > **Note:** When using the local network, the remaining time is only updated when a change of state occurs in the contract (e.g., casting a vote). To update the remaining time, please vote using another private key.
-
-2. **Check Voting Status**:    Retrieves the current status of the voting process (e.g., active or ended)
-
-   ```bash
-   npm run local:status     # Local Network
-   ```
-   ```bash
-   npm run sampoia:status   # Arbitrum Network
-   ```
-
-3. **Fetch Candidate Details**:     Lists all candidates and their details
-
-   ```bash
-   npm run local:candidates # Local Network
-   ```
-   ```bash
-   npm run sampoia:candidates # Arbitrum Network
-   ```
-
-4. **Display Vote Count**:   Displays the vote count for each candidate
-
-
-   ```bash
-   npm run local:votes      # Local Network
-   ```
-   ```bash
-   npm run sampoia:votes    # Arbitrum Network
-   ```
-
-5. **Retrieve Candidate Indices**:    Retrieves the indices of all candidates 
-
-   ```bash
-   npm run local:indices    # Local Network
-   ```
-   ```bash
-   npm run sampoia:indices  # Arbitrum Network
-   ```
-
----
-
-### **Voting Action**
-
-1. **Cast a Vote**:    Casts a vote for a specified candidate index
-
-   ```bash
-   npm run local:vote       # Local Network
-   ```
-   ```bash
-   npm run sampoia:vote     # Arbitrum Network
-   ```
 
 ## Troubleshooting
 
@@ -494,52 +408,12 @@ This section provides solutions for common issues you might encounter while depl
 - Check the [Arbitrum Network Status](https://status.arbitrum.io/) for any ongoing issues with the Sepolia network.
 - If possible, request testnet ETH from a colleague or team member who has access to the testnet.
 
----
+## Conclusion
 
-## Screenshots
+The Voting DApp demonstrates the power and flexibility of blockchain technology in creating transparent and secure voting systems. Designed for deployment on the Arbitrum network while maintaining compatibility with local testing environments, this application highlights how smart contracts can streamline voting processes with enhanced trust and accountability.
 
-Below are screenshots illustrating the commands and operations available in the project. Each screenshot corresponds to a specific feature or functionality of the Voting DApp, organized in the order they should be executed:
+This project also serves as a valuable educational tool, showcasing Solidity smart contract development, integration with Hardhat, and the use of decentralized networks. By following the step-by-step instructions and utilizing the provided scripts, users can easily deploy, test, and interact with the Voting DApp.
 
-1. **`npx hardhat node`**  
-   Starts the local Hardhat network node for testing and development.
-      ![Start Hardhat Node](Screenshots/npx_hardhat_node.png "Starting the Hardhat Node")
+Whether used as a foundation for further development or as a practical learning exercise, the Voting DApp illustrates the potential of decentralized applications to solve real-world challenges. Contributions, feedback, and improvements are always welcome to enhance the project's utility and reach.
 
-
-2. **`.env file`**  
-   Set up and configure the `.env` file with the necessary environment variables, including private keys and RPC URLs.
-
-3. **`npm run local`**  
-   Deploys the contract to the local Hardhat network.
-
-4. **`npm run add`**  
-   Adds a candidate to the voting process.
-
-5. **`npm run start`**  
-   Starts the voting process with the specified duration.
-
-6. **`npm run vote`**  
-   Casts a vote for the specified candidate index.
-
-7. **`npm run time first vote`**  
-   Checks the remaining time for the voting process after the first vote.
-
-8. **`npm run vote (2)`**  
-   Casts a second vote for the specified candidate.
-
-9. **`npm run time second vote`**  
-   Checks the remaining time for the voting process after the second vote.
-
-10. **`npm run votes`**  
-    Displays the current vote count for all candidates.
-
-11. **`npm run remove`**  
-    Removes a candidate by index from the voting process.
-
-12. **`npm run status`**  
-    Checks the current status of the voting process (e.g., active or ended).
-
-13. **`npm run end`**  
-    Ends the voting process and locks in the results.
-
-14. **`npm run indices`**  
-    Displays all candidate indices for the current voting process.
+Thank you for exploring the Voting DApp, and we hope it serves as an inspiring step toward building innovative blockchain solutions.

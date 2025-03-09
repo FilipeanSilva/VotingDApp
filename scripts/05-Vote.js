@@ -10,8 +10,17 @@ async function main() {
   }
 
   // Set the candidate index to vote for
-  const candidateIndex = 2;
+  const index = process.env.CANDIDATE_INDEX;
+  if (!index) {
+    console.error('Error: CANDIDATE_INDEX is not set in the environment.');
+    process.exit(1);
+  }
 
+  const candidateIndex = parseInt(index);
+  if (isNaN(candidateIndex)) {
+    console.error('Error: CANDIDATE_INDEX must be a valid number.');
+    process.exit(1);
+  }
   // Get Voting contract instance
   const Voting = await hre.ethers.getContractFactory("Voting");
   const votingContract = Voting.attach(contractAddress);

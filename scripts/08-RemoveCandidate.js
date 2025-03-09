@@ -8,17 +8,28 @@ async function main() {
     process.exit(1);
   }
 
-  // Set candidate index, default to 0 if not set in .env
-  const candidateIndex = process.env.CANDIDATE_INDEX || 2;
-  console.log(`Excluding candidate at index ${candidateIndex}...`);
+  // Get candidate index from the environment variable
+  const candidateIndex = process.env.CANDIDATE_INDEX;
+  if (!candidateIndex) {
+    console.error("Error: CANDIDATE_INDEX is not set in the environment.");
+    process.exit(1);
+  }
+
+  const index = parseInt(candidateIndex, 10);
+  if (isNaN(index)) {
+    console.error("Error: CANDIDATE_INDEX must be a valid number.");
+    process.exit(1);
+  }
+
+  console.log(`Excluding candidate at index ${index}...`);
 
   // Get Voting contract instance
   const Voting = await hre.ethers.getContractFactory("Voting");
   const votingContract = Voting.attach(contractAddress);
 
   try {
-    await excludeCandidate(votingContract, candidateIndex);
-    console.log(`Candidate at index ${candidateIndex} excluded successfully!`);
+    await excludeCandidate(votingContract, index);
+    console.log(`Candidate at index ${index} excluded successfully!`);
   } catch (error) {
     console.error("Failed to exclude candidate:", error);
   }
